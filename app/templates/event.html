@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Event #{{ ev.id }}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>Event <span class="muted">#{{ ev.id }}</span></h1>
+      <div class="actions">
+        <a class="btn" href="{{ events_url }}">Back</a>
+        <a class="btn" href="{{ json_url }}" rel="noopener noreferrer">Raw JSON</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row"><div class="label">Time</div>          <div class="mono">{{ ev.ts }}</div></div>
+      <div class="row"><div class="label">Len</div>           <div class="mono">{{ ev.raw_len }}</div></div>
+      <div class="row"><div class="label">URL</div>           <div class="mono">{{ ev.url | e }}</div></div>
+      <div class="row"><div class="label">IP</div>            <div class="mono">{{ ev.ip | e }}</div></div>
+      <div class="row"><div class="label">Referrer</div>      <div class="mono">{{ ev.referrer | e }}</div></div>
+      <div class="row"><div class="label">User Agent</div>    <div class="mono">{{ ev.ua | e }}</div></div>
+      <div class="row"><div class="label">Cookies</div>       <div class="mono">{{ ev.cookies | e }}</div></div>
+      <div class="row"><div class="label">Origin</div>        <div class="mono">{{ ev.origin | e }}</div></div>
+      <div class="row"><div class="label">Title</div>         <div class="mono">{{ ev.title | e }}</div></div>
+      <div class="row"><div class="label">Local Storage</div> <div><details><summary>show</summary><pre><code>{{ ev.local_storage_pretty | e }}</code></pre></details></div></div>
+      <div class="row"><div class="label">Session Storage</div><div><details><summary>show</summary><pre><code>{{ ev.session_storage_pretty | e }}</code></pre></details></div></div>
+      <div class="row"><div class="label">DOM</div>           <div><details><summary>show</summary><pre><code>{{ ev.dom | e }}</code></pre></details></div></div>
+    </div>
+  </div>
+</body>
+</html>

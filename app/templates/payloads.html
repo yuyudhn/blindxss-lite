@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Payloads</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>blindxss-lite <span class="muted">· payloads</span></h1>
+      <div class="actions">
+        <a class="btn" href="{{ events_url }}">Back to events</a>
+        <a class="btn btn--accent" href="/payloads">Refresh</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Custom JS <span class="muted">(appended to /p.js)</span></h3>
+      <form method="POST" action="/payloads">
+        <textarea name="code" spellcheck="false" placeholder="// your custom JavaScript here...">{{ code }}</textarea>
+        <div class="hint">Save to update the JS appended to /p.js</div>
+        <div style="margin-top:12px">
+          <button class="btn btn--accent" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Full JS beacon <span class="muted">(recommended)</span></h3>
+      <pre><code>{{ full_js }}</code></pre>
+      <div class="hint">Loads /p.js to collect URL, UA, cookies, local/session storage, DOM, origin, title.</div>
+    </div>
+
+    <div class="card">
+      <h3>Other variants</h3>
+      <div class="grid">
+        {% for name, code in variants %}
+          <div>
+            <div class="card-title">{{ name }}</div>
+            <pre><code>{{ code }}</code></pre>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

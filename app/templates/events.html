@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Events</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>blindxss-lite <span class="muted">· events</span></h1>
+      <div class="actions">
+        <a class="btn" href="/payloads">Payloads</a>
+        <a class="btn btn--accent" href="/events">Refresh</a>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Time (UTC)</th>
+            <th>URL</th>
+            <th>Referrer</th>
+            <th>IP</th>
+            <th>User-Agent</th>
+            <th>Cookies</th>
+            <th>Len</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td class="nowrap">
+              <a href="/events/{{ r[0] }}/view" target="_blank" rel="noopener noreferrer">{{ r[0] }}</a>
+            </td>
+            <td class="mono nowrap">{{ r[1] }}</td>
+            <td class="mono">
+              {% set u = r[4] or '' %}
+              {% if u and (u[:4]|lower == 'http') %}
+                <a href="{{ u | e }}" target="_blank" rel="noopener noreferrer nofollow">{{ u | e }}</a>
+              {% else %}
+                {{ u | e }}
+              {% endif %}
+            </td>
+            <td class="mono">{{ (r[5] or '') | e }}</td>
+            <td class="mono nowrap">{{ (r[2] or '') | e }}</td>
+            <td class="mono">{{ (r[3] or '')[:180] | e }}</td>
+            <td class="mono">{{ (r[7] or '')[:200] | e }}</td>
+            <td class="mono nowrap">{{ r[8] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

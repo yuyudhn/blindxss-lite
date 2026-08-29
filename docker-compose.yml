@@ -1,0 +1,41 @@
+services:
+  blindxss:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blindxss-lite:latest
+    container_name: blindxss_app
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.10'
+          memory: 64M
+    environment:
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set-a-strong-admin-password}
+      PORT: "8080"
+      DB_PATH: /data/bxss.db
+    ports:
+      - "127.0.0.1:8089:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/_healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - bxss_data:/data
+
+volumes:
+  bxss_data:
