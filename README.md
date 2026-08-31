@@ -11,7 +11,7 @@ A lightweight Blind XSS (Cross-Site Scripting) collector and payload server buil
 - **HTTP Basic Auth** — admin routes protected by `ADMIN_USER` / `ADMIN_PASSWORD`
 - **SQLite persistence** — database auto-created on first run; deleting `bxss.db` rebuilds it fresh
 - **Docker-ready** — `Dockerfile` and `docker-compose.yml` included
-- **Rate limiting** — simple in-memory sliding-window limiter for collector endpoints
+- **Rate limiting** — SQLite-backed sliding-window limiter for collector endpoints (shared across workers)
 
 ## Quick Start
 
@@ -77,9 +77,11 @@ gunicorn -b 127.0.0.1:8080 --workers 2 --threads 4 wsgi:app
 | `ADMIN_PASSWORD` | `changeme` | Dashboard password |
 | `DB_PATH` | `./bxss.db` | SQLite database path |
 | `MAX_BODY` | `524288` | Max collector body size (bytes) |
-| `CUSTOM_JS_FILE` | `/data/custom.js` | Custom JS appended to `/p.js` |
+| `RATE_LIMIT_COUNT` | `60` | Max collector requests per window (per IP) |
+| `RATE_LIMIT_WINDOW` | `60` | Rate limit window in seconds |
 | `LOG_LEVEL` | `INFO` | Python logging level |
-| `PUBLIC_URL` | auto-detect | Public URL used to generate payloads |
+
+> Custom JS is edited and stored via the `/payloads` admin page (persisted in the SQLite `settings` table) and appended to `/p.js`. It is no longer read from a file.
 
 ## Project Structure
 
@@ -129,5 +131,5 @@ Result detail:
 - Admin routes require HTTP Basic Auth. Use a strong password in production.
 - Collector endpoints are intentionally unauthenticated.
 - All origins are allowed for CORS so payloads can send data from any site.
-- In-memory rate limiting helps mitigate collector abuse.
+- SQLite-backed rate limiting helps mitigate collector abuse and is shared across workers.
 - `.env` should never be committed to version control.

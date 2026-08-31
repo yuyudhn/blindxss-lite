@@ -37,6 +37,7 @@ MANIFEST
 
 # Project-specific
 # IDE
+agentic-ai
 .vscode/
 .idea/
 *.swp

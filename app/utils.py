@@ -1,6 +1,5 @@
 from __future__ import annotations
 import base64, zlib, json, time
-from collections import defaultdict, deque
 from datetime import datetime
 from functools import wraps
 from flask import request, current_app, abort
@@ -61,22 +60,23 @@ def require_basic_auth(f):
         return f(*args, **kwargs)
     return wrapper
 
-# --- simple in-memory sliding-window rate limiter ---
-_rate_buckets = defaultdict(deque)
-
+# --- SQLite-backed sliding-window rate limiter (shared across gunicorn workers) ---
 def is_rate_limited(key: str) -> bool:
     """Return True if `key` exceeded RATE_LIMIT_COUNT requests in RATE_LIMIT_WINDOW seconds."""
+    from .db import get_db
+
     limit = int(current_app.config.get("RATE_LIMIT_COUNT", 60))
     window = float(current_app.config.get("RATE_LIMIT_WINDOW", 60))
     now = time.time()
-    bucket = _rate_buckets[key]
+    db = get_db()
 
-    # prune expired timestamps
-    while bucket and now - bucket[0] > window:
-        bucket.popleft()
-
-    if len(bucket) >= limit:
+    # drop timestamps outside the window for this key
+    db.execute("DELETE FROM rate_limit WHERE key=? AND ts <= ?", (key, now - window))
+    count = db.execute("SELECT COUNT(*) FROM rate_limit WHERE key=?", (key,)).fetchone()[0]
+    if count >= limit:
+        db.commit()
         return True
 
-    bucket.append(now)
+    db.execute("INSERT INTO rate_limit(key, ts) VALUES(?, ?)", (key, now))
+    db.commit()
     return False
