@@ -41,7 +41,7 @@ def pretty_json(s: str) -> str:
 def _check_basic_auth(username: str, password: str) -> bool:
     """Compare username/password against config using constant-time comparison."""
     expected_user = current_app.config.get("ADMIN_USER", "admin")
-    expected_pass = current_app.config.get("ADMIN_PASSWORD", "changeme")
+    expected_pass = current_app.config["ADMIN_PASSWORD"]
     return hmac.compare_digest(username.encode(), expected_user.encode()) and hmac.compare_digest(
         password.encode(), expected_pass.encode()
     )

@@ -74,7 +74,7 @@ gunicorn -b 127.0.0.1:8080 --workers 2 --threads 4 wsgi:app
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ADMIN_USER` | `admin` | Dashboard username |
-| `ADMIN_PASSWORD` | `changeme` | Dashboard password |
+| `ADMIN_PASSWORD` | *(required)* | Dashboard password — startup fails if unset |
 | `DB_PATH` | `./bxss.db` | SQLite database path |
 | `PUBLIC_URL` | *(empty)* | Public base URL for generated payloads (use when behind a tunnel/reverse proxy; falls back to request host) |
 | `TRUST_PROXY` | *(empty)* | Set `1` to trust `X-Forwarded-For`/`CF-Connecting-IP` for client IP (only when behind a trusted reverse proxy; required there or all clients share the proxy IP for rate limiting) |

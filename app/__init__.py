@@ -22,8 +22,8 @@ def create_app() -> Flask:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
         stream=sys.stdout,
     )
-    if app.config.get("ADMIN_PASSWORD") == "changeme":
-        logging.getLogger("blindxss").warning("ADMIN_PASSWORD uses the default 'changeme' - set a strong password")
+    if not app.config.get("ADMIN_PASSWORD"):
+        raise RuntimeError("ADMIN_PASSWORD environment variable is required")
 
     @app.after_request
     def add_cors(resp):

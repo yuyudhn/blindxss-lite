@@ -23,7 +23,7 @@ class Config:
     _load_dotenv(BASE_DIR / ".." / ".env")
     # Basic Auth credentials for admin dashboard.
     ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
-    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")
+    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD") or ""
     DB_PATH = str(Path(os.environ.get("DB_PATH", str(DEFAULT_DB))).resolve())
     MAX_BODY = int(os.environ.get("MAX_BODY", "524288"))
     RATE_LIMIT_COUNT = int(os.environ.get("RATE_LIMIT_COUNT", "60"))
