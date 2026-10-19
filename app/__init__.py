@@ -15,12 +15,15 @@ from .payloads import bp as payloads_bp
 def create_app() -> Flask:
     app = Flask(__name__, static_folder="static", template_folder="templates")
     app.config.from_object(Config)
+    app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_BODY"]
     db.init_app(app)
     logging.basicConfig(
         level=getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO),
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
         stream=sys.stdout,
     )
+    if app.config.get("ADMIN_PASSWORD") == "changeme":
+        logging.getLogger("blindxss").warning("ADMIN_PASSWORD uses the default 'changeme' - set a strong password")
 
     @app.after_request
     def add_cors(resp):

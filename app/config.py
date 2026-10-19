@@ -28,3 +28,5 @@ class Config:
     MAX_BODY = int(os.environ.get("MAX_BODY", "524288"))
     RATE_LIMIT_COUNT = int(os.environ.get("RATE_LIMIT_COUNT", "60"))
     RATE_LIMIT_WINDOW = int(os.environ.get("RATE_LIMIT_WINDOW", "60"))
+    PUBLIC_URL = os.environ.get("PUBLIC_URL", "")
+    TRUST_PROXY = os.environ.get("TRUST_PROXY", "").lower() in ("1", "true", "yes")

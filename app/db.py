@@ -38,6 +38,8 @@ def get_db():
         db_path = Path(current_app.config.get("DB_PATH", "bxss.db"))
         g.db = sqlite3.connect(db_path)
         g.db.row_factory = sqlite3.Row
+        g.db.execute("PRAGMA busy_timeout = 5000")
+        g.db.execute("PRAGMA journal_mode = WAL").fetchone()
     return g.db
 
 def init_db(app: Flask):

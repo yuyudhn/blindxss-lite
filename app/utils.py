@@ -9,9 +9,10 @@ def now_iso() -> str:
     return datetime.utcnow().isoformat() + "Z"
 
 def client_ip() -> str:
-    for h in ("X-Forwarded-For", "CF-Connecting-IP"):
-        if h in request.headers:
-            return request.headers[h].split(",")[0].strip()
+    if current_app.config.get("TRUST_PROXY"):
+        for h in ("X-Forwarded-For", "CF-Connecting-IP"):
+            if h in request.headers:
+                return request.headers[h].split(",")[0].strip()
     return request.remote_addr or ""
 
 def compress_dom(dom: str, limit: int = 200000) -> str:
@@ -59,6 +60,19 @@ def require_basic_auth(f):
             )
         return f(*args, **kwargs)
     return wrapper
+
+from urllib.parse import urlparse
+
+def require_same_origin() -> None:
+    """403 unless the request's Origin/Referer matches the app's own host."""
+    expected = request.host
+    for hdr in ("Origin", "Referer"):
+        val = request.headers.get(hdr)
+        if val:
+            if urlparse(val).netloc == expected:
+                return
+            abort(403)
+    abort(403)  # no Origin and no Referer: not a browser form post
 
 # --- SQLite-backed sliding-window rate limiter (shared across gunicorn workers) ---
 def is_rate_limited(key: str) -> bool:

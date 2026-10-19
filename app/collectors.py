@@ -15,7 +15,7 @@ COOKIES_LIMIT = 4000
 STORAGE_LIMIT = 8000
 
 def store_event(data: dict):
-    """Menyimpan data event ke database (skema lama kamu)."""
+    """Insert one captured event row."""
     with get_db() as db:
         db.execute(
             """INSERT INTO events

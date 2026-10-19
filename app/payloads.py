@@ -4,7 +4,7 @@ from __future__ import annotations
 from urllib.parse import urlparse
 from flask import Blueprint, render_template, request, abort, current_app
 from .db import get_setting, set_setting
-from .utils import require_basic_auth
+from .utils import require_basic_auth, require_same_origin
 
 bp = Blueprint("payloads", __name__)
 
@@ -13,7 +13,10 @@ bp = Blueprint("payloads", __name__)
 def payloads():
     # --- simpan custom JS ke DB kalau POST ---
     if request.method == "POST":
+        require_same_origin()
         code = request.form.get("code", "")
+        if len(code) > 65536:
+            abort(413)
         set_setting("custom_js", code)
     # ----------------------------------------
 
