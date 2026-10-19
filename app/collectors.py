@@ -1,9 +1,11 @@
 # app/collectors.py
 from __future__ import annotations
-import json, base64
-from flask import Blueprint, Response, request, jsonify, current_app
+import json, base64, re
+from flask import Blueprint, Response, request, jsonify, current_app, abort
 from .db import get_db, get_setting
 from .utils import now_iso, client_ip, compress_dom, is_rate_limited
+
+_SAFE_HOST_RE = re.compile(r'^[a-zA-Z0-9._:\[\]-]+$')
 
 bp = Blueprint("collectors", __name__)
 
@@ -40,6 +42,8 @@ def store_event(data: dict):
 @bp.route("/p.js")
 def payload_js():
     host = request.host.split("://")[-1]
+    if not _SAFE_HOST_RE.match(host):
+        abort(400)
     _bxss_base = f"//{host}"
 
     js = rf"""

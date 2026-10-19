@@ -3,8 +3,7 @@ from __future__ import annotations
 import os
 import logging
 import sys
-from datetime import datetime
-from flask import Flask, jsonify, request, abort
+from flask import Flask, request, abort
 from .config import Config
 from . import db
 from .collectors import bp as collectors_bp
@@ -42,12 +41,10 @@ def create_app() -> Flask:
     @app.route("/_healthz", methods=["GET"])
     def health():
         try:
-            conn = db.get_db()
-            conn.execute("SELECT 1").fetchone()
-            db_ok = True
+            db.get_db().execute("SELECT 1").fetchone()
         except Exception:
-            db_ok = False
-        return jsonify(ok=True, db_ok=db_ok, now=datetime.utcnow().isoformat() + "Z")
+            return "", 503
+        return "", 200
 
     app.register_blueprint(collectors_bp)
     app.register_blueprint(events_bp)
